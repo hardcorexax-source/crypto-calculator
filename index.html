@@ -359,15 +359,7 @@
 
         footer {
             bottom: 0;
-            & ::after{
-                content: "";
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-image: linear-gradient(to top, var(--tg-theme-bg-color), #0000);
-            }
+            background-image: linear-gradient(to top, var(--tg-theme-bg-color), #0000);
             -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
             mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
         }
@@ -375,15 +367,7 @@
         #header {
             top: 0;
             padding: 60px !important; 
-            & ::after{
-                position: absolute;
-                content: "";
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-image: linear-gradient(to bottom, var(--tg-theme-bg-color), #0000);
-            }
+            background-image: linear-gradient(to bottom, var(--tg-theme-bg-color), #0000);
             -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
             mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
         }
