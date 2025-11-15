@@ -340,12 +340,36 @@
             animation: spin 1s linear infinite;
         }
 
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 30px;
+            text-align: center;
+            color: white;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            background-color: #0000;
+
+            /* создаём градиентную прозрачность через маску */
+            -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
+            mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
+            -webkit-mask-size: 100% 100%;
+            mask-size: 100% 100%;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
+    
     <div id="for-tg" style="display: none; height: 60px;">
 
     </div>
@@ -402,6 +426,7 @@
         </div>
 
         <div class="stats-grid" id="statsGrid"></div>
+        <footer></footer>
     </div>
 
     <script>
