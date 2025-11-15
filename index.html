@@ -340,9 +340,8 @@
             animation: spin 1s linear infinite;
         }
 
-        footer {
+        footer, #header {
             position: fixed;
-            bottom: 0;
             left: 0;
             width: 100%;
             padding: 30px;
@@ -353,14 +352,24 @@
             background-color: #0000;
 
             /* создаём градиентную прозрачность через маску */
-            -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
-            mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
             -webkit-mask-size: 100% 100%;
             mask-size: 100% 100%;
             -webkit-mask-repeat: no-repeat;
             mask-repeat: no-repeat;
 
             border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        footer {
+            bottom: 0;
+            -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
+            mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
+        }
+
+        #header {
+            top: 0;
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
         }
 
         @keyframes spin {
@@ -373,6 +382,9 @@
     <div id="for-tg" style="display: none; height: 60px;">
 
     </div>
+
+    <div id="header"></div>
+
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
     </div>
