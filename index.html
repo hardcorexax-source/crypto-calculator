@@ -338,6 +338,9 @@
     </style>
 </head>
 <body>
+    <div id="for-tg" style="display: none; height: 60px;">
+
+    </div>
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
     </div>
@@ -399,7 +402,9 @@
         tg.expand();
         tg.ready();
         tg.requestFullscreen();
-        tg.disableVerticalSwipes();
+        if (tg.disableVerticalSwipes()) {
+            document.querySelector("#for-tg").style.display = "block";
+        }
 
         // Применяем тему Telegram
         document.documentElement.style.setProperty('--tg-theme-bg-color', tg.backgroundColor || '#ffffff');
