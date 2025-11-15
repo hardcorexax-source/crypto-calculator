@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Crypto Calculator</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 12px;
+        }
+
+        .header {
+            background: var(--tg-theme-secondary-bg-color, #f4f4f5);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--tg-theme-text-color, #000000);
+        }
+
+        .refresh-btn {
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .refresh-btn:active {
+            opacity: 0.7;
+        }
+
+        .refresh-btn.loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .main-card {
+            background: var(--tg-theme-secondary-bg-color, #f4f4f5);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+        }
+
+        .crypto-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .crypto-btn {
+            background: var(--tg-theme-bg-color, #ffffff);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 12px 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--tg-theme-text-color, #000000);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .crypto-btn.active {
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border-color: var(--tg-theme-button-color, #3390ec);
+        }
+
+        .crypto-btn:active {
+            transform: scale(0.95);
+        }
+
+        .crypto-icon {
+            font-size: 20px;
+        }
+
+        .price-display {
+            text-align: center;
+            margin: 24px 0;
+        }
+
+        .price-label {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #999999);
+            margin-bottom: 8px;
+        }
+
+        .price-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--tg-theme-text-color, #000000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .price-change {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .price-change.positive {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .price-change.negative {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .calculator-section {
+            margin-top: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #999999);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-field {
+            width: 100%;
+            background: var(--tg-theme-bg-color, #ffffff);
+            border: none;
+            border-radius: 10px;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--tg-theme-text-color, #000000);
+            outline: none;
+        }
+
+        .input-suffix {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--tg-theme-hint-color, #999999);
+        }
+
+        .swap-btn {
+            background: var(--tg-theme-bg-color, #ffffff);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin: -20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            z-index: 10;
+            font-size: 20px;
+            color: var(--tg-theme-text-color, #000000);
+            transition: transform 0.2s;
+        }
+
+        .swap-btn:active {
+            transform: scale(0.9);
+        }
+
+        .result-display {
+            background: linear-gradient(135deg, 
+                var(--tg-theme-button-color, #3390ec) 0%, 
+                var(--tg-theme-button-color, #2980d9) 100%);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .stat-card {
+            background: var(--tg-theme-secondary-bg-color, #f4f4f5);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--tg-theme-hint-color, #999999);
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--tg-theme-text-color, #000000);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.live {
+            background: #22c55e;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .converter-toggle {
+            display: flex;
+            background: var(--tg-theme-bg-color, #ffffff);
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--tg-theme-text-color, #000000);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active {
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .loading-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-title">
+                <span class="status-indicator live"></span>
+                Crypto Calculator
+            </div>
+            <button class="refresh-btn" id="refreshBtn">Обновить</button>
+        </div>
+
+        <div class="main-card">
+            <div class="crypto-selector" id="cryptoSelector"></div>
+
+            <div class="price-display">
+                <div class="price-label">Текущая цена</div>
+                <div class="price-value">
+                    <span id="currentPrice">$0.00</span>
+                    <span class="price-change" id="priceChange">+0.00%</span>
+                </div>
+            </div>
+
+            <div class="converter-toggle">
+                <button class="toggle-btn active" data-mode="crypto">Крипта → USD</button>
+                <button class="toggle-btn" data-mode="usd">USD → Крипта</button>
+            </div>
+
+            <div class="calculator-section">
+                <div class="input-group">
+                    <label class="input-label">Количество</label>
+                    <div class="input-wrapper">
+                        <input type="number" class="input-field" id="inputAmount" 
+                               placeholder="0.00" step="any" value="1">
+                        <span class="input-suffix" id="inputSuffix">BTC</span>
+                    </div>
+                </div>
+
+                <button class="swap-btn" id="swapBtn">⇅</button>
+
+                <div class="input-group">
+                    <label class="input-label">Результат</label>
+                    <div class="input-wrapper">
+                        <input type="number" class="input-field" id="outputAmount" 
+                               placeholder="0.00" step="any" readonly>
+                        <span class="input-suffix" id="outputSuffix">USD</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid"></div>
+    </div>
+
+    <script>
+        // Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+
+        // Применяем тему Telegram
+        document.documentElement.style.setProperty('--tg-theme-bg-color', tg.backgroundColor || '#ffffff');
+        document.documentElement.style.setProperty('--tg-theme-text-color', tg.textColor || '#000000');
+        document.documentElement.style.setProperty('--tg-theme-hint-color', tg.hintColor || '#999999');
+        document.documentElement.style.setProperty('--tg-theme-button-color', tg.buttonColor || '#3390ec');
+        document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.buttonTextColor || '#ffffff');
+        document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', tg.secondaryBackgroundColor || '#f4f4f5');
+
+        // Конфигурация криптовалют
+        const cryptos = [
+            { symbol: 'BTCUSDT', name: 'BTC', icon: '₿', fullName: 'Bitcoin' },
+            { symbol: 'ETHUSDT', name: 'ETH', icon: 'Ξ', fullName: 'Ethereum' },
+            { symbol: 'BNBUSDT', name: 'BNB', icon: '💰', fullName: 'BNB' },
+            { symbol: 'SOLUSDT', name: 'SOL', icon: '◎', fullName: 'Solana' },
+            { symbol: 'XRPUSDT', name: 'XRP', icon: '✕', fullName: 'Ripple' },
+            { symbol: 'DOGEUSDT', name: 'DOGE', icon: '🐕', fullName: 'Dogecoin' },
+            { symbol: 'ADAUSDT', name: 'ADA', icon: '₳', fullName: 'Cardano' },
+            { symbol: 'TONUSDT', name: 'TON', icon: '💎', fullName: 'Toncoin' }
+        ];
+
+        let selectedCrypto = cryptos[0];
+        let prices = {};
+        let priceChanges = {};
+        let ws = null;
+        let mode = 'crypto'; // crypto to usd or usd to crypto
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+
+        // Создание кнопок выбора криптовалют
+        function renderCryptoButtons() {
+            const selector = document.getElementById('cryptoSelector');
+            selector.innerHTML = cryptos.map(crypto => `
+                <button class="crypto-btn ${crypto.symbol === selectedCrypto.symbol ? 'active' : ''}" 
+                        data-symbol="${crypto.symbol}">
+                    <span class="crypto-icon">${crypto.icon}</span>
+                    <span>${crypto.name}</span>
+                </button>
+            `).join('');
+
+            // Добавляем обработчики
+            document.querySelectorAll('.crypto-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const symbol = this.dataset.symbol;
+                    selectCrypto(symbol);
+                    tg.HapticFeedback.impactOccurred('light');
+                });
+            });
+        }
+
+        // Выбор криптовалюты
+        function selectCrypto(symbol) {
+            selectedCrypto = cryptos.find(c => c.symbol === symbol);
+            renderCryptoButtons();
+            updateDisplay();
+            calculate();
+        }
+
+        // Подключение к Binance WebSocket
+        function connectWebSocket() {
+            const symbols = cryptos.map(c => c.symbol.toLowerCase()).join('/');
+            const wsUrl = `wss://stream.binance.com:9443/stream?streams=${symbols.split('/').map(s => s + '@ticker').join('/')}`;
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('WebSocket подключен');
+                reconnectAttempts = 0;
+                document.querySelector('.status-indicator').classList.add('live');
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.data) {
+                    const ticker = data.data;
+                    const symbol = ticker.s;
+                    prices[symbol] = parseFloat(ticker.c);
+                    priceChanges[symbol] = parseFloat(ticker.P);
+                    
+                    if (symbol === selectedCrypto.symbol) {
+                        updateDisplay();
+                        calculate();
+                    }
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket ошибка:', error);
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket отключен');
+                document.querySelector('.status-indicator').classList.remove('live');
+                
+                // Переподключение
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    setTimeout(connectWebSocket, 3000 * reconnectAttempts);
+                }
+            };
+        }
+
+        // Обновление отображения цены
+        function updateDisplay() {
+            const price = prices[selectedCrypto.symbol] || 0;
+            const change = priceChanges[selectedCrypto.symbol] || 0;
+
+            document.getElementById('currentPrice').textContent = `$${price.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: price < 1 ? 6 : 2
+            })}`;
+
+            const changeEl = document.getElementById('priceChange');
+            changeEl.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+            changeEl.className = `price-change ${change >= 0 ? 'positive' : 'negative'}`;
+
+            // Обновляем суффиксы
+            if (mode === 'crypto') {
+                document.getElementById('inputSuffix').textContent = selectedCrypto.name;
+                document.getElementById('outputSuffix').textContent = 'USD';
+            } else {
+                document.getElementById('inputSuffix').textContent = 'USD';
+                document.getElementById('outputSuffix').textContent = selectedCrypto.name;
+            }
+
+            updateStats();
+        }
+
+        // Расчет конвертации
+        function calculate() {
+            const inputAmount = parseFloat(document.getElementById('inputAmount').value) || 0;
+            const price = prices[selectedCrypto.symbol] || 0;
+            
+            let result;
+            if (mode === 'crypto') {
+                result = inputAmount * price;
+            } else {
+                result = inputAmount / price;
+            }
+
+            document.getElementById('outputAmount').value = result.toFixed(mode === 'usd' ? 8 : 2);
+        }
+
+        // Обновление статистики
+        function updateStats() {
+            const price = prices[selectedCrypto.symbol] || 0;
+            const change = priceChanges[selectedCrypto.symbol] || 0;
+
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-label">24ч Изменение</div>
+                    <div class="stat-value" style="color: ${change >= 0 ? '#22c55e' : '#ef4444'}">
+                        ${change >= 0 ? '+' : ''}${change.toFixed(2)}%
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Монета</div>
+                    <div class="stat-value">${selectedCrypto.fullName}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Тикер</div>
+                    <div class="stat-value">${selectedCrypto.name}/USD</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Цена</div>
+                    <div class="stat-value">$${price.toFixed(2)}</div>
+                </div>
+            `;
+        }
+
+        // Переключение режима
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                mode = this.dataset.mode;
+                updateDisplay();
+                calculate();
+                tg.HapticFeedback.impactOccurred('light');
+            });
+        });
+
+        // Кнопка обмена
+        document.getElementById('swapBtn').addEventListener('click', () => {
+            mode = mode === 'crypto' ? 'usd' : 'crypto';
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+            
+            const inputAmount = document.getElementById('inputAmount').value;
+            const outputAmount = document.getElementById('outputAmount').value;
+            document.getElementById('inputAmount').value = outputAmount;
+            document.getElementById('outputAmount').value = inputAmount;
+            
+            updateDisplay();
+            tg.HapticFeedback.impactOccurred('medium');
+        });
+
+        // Расчет при вводе
+        document.getElementById('inputAmount').addEventListener('input', calculate);
+
+        // Кнопка обновления
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            const btn = document.getElementById('refreshBtn');
+            btn.classList.add('loading');
+            tg.HapticFeedback.impactOccurred('light');
+            
+            setTimeout(() => {
+                btn.classList.remove('loading');
+                tg.HapticFeedback.notificationOccurred('success');
+            }, 1000);
+        });
+
+        // Инициализация
+        renderCryptoButtons();
+        connectWebSocket();
+
+        // Начальный расчет
+        setTimeout(() => {
+            if (prices[selectedCrypto.symbol]) {
+                calculate();
+            }
+        }, 1000);
+
+        // Очистка при закрытии
+        window.addEventListener('beforeunload', () => {
+            if (ws) ws.close();
+        });
+    </script>
+</body>
+</html>
