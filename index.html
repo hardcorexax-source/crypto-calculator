@@ -398,6 +398,8 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
+        tg.requestFullscreen();
+        tg.disableVerticalSwipes();
 
         // Применяем тему Telegram
         document.documentElement.style.setProperty('--tg-theme-bg-color', tg.backgroundColor || '#ffffff');
