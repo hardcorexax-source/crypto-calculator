@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Футер с градиентной прозрачностью и блюром</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #fff;
+      min-height: 200vh; /* длинная страница для скролла */
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 30px;
+      text-align: center;
+      color: white;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      background-color: #0000;
+
+      /* создаём градиентную прозрачность через маску */
+      -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
+      mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+
+    main {
+      padding: 40px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .spacer {
+      height: 120px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Длинный текст для проверки</h1>
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+      Suspendisse ac feugiat lorem. Duis eget dolor nec nisi luctus tincidunt. 
+      Phasellus eget consequat libero. Donec facilisis, sapien in venenatis dictum, 
+      erat nisl efficitur eros, sed porta orci metus eget lorem. 
+      Vivamus id elit eu turpis porta gravida. Sed gravida risus at velit commodo.
+    </p>
+<p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+      Suspendisse ac feugiat lorem. Duis eget dolor nec nisi luctus tincidunt. 
+      Phasellus eget consequat libero. Donec facilisis, sapien in venenatis dictum, 
+      erat nisl efficitur eros, sed porta orci metus eget lorem. 
+      Vivamus id elit eu turpis porta gravida. Sed gravida risus at velit commodo.
+    </p>
+<p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+      Suspendisse ac feugiat lorem. Duis eget dolor nec nisi luctus tincidunt. 
+      Phasellus eget consequat libero. Donec facilisis, sapien in venenatis dictum, 
+      erat nisl efficitur eros, sed porta orci metus eget lorem. 
+      Vivamus id elit eu turpis porta gravida. Sed gravida risus at velit commodo.
+    </p>
+<p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+      Suspendisse ac feugiat lorem. Duis eget dolor nec nisi luctus tincidunt. 
+      Phasellus eget consequat libero. Donec facilisis, sapien in venenatis dictum, 
+      erat nisl efficitur eros, sed porta orci metus eget lorem. 
+      Vivamus id elit eu turpis porta gravida. Sed gravida risus at velit commodo.
+    </p>
+<p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+      Suspendisse ac feugiat lorem. Duis eget dolor nec nisi luctus tincidunt. 
+      Phasellus eget consequat libero. Donec facilisis, sapien in venenatis dictum, 
+      erat nisl efficitur eros, sed porta orci metus eget lorem. 
+      Vivamus id elit eu turpis porta gravida. Sed gravida risus at velit commodo.
+    </p>
+    <p>Добавь ещё текст, чтобы было что скроллить...</p>
+    <div class="spacer"></div>
+  </main>
+
+  <footer>
+    🌫️ Футер с блюром и градиентной прозрачностью
+  </footer>
+</body>
+</html>
