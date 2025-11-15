@@ -362,7 +362,14 @@
 
         footer {
             bottom: 0;
-            background-image: linear-gradient(to top, --tg-theme-bg-color, #0000);
+            & ::after{
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-image: linear-gradient(to top, --tg-theme-bg-color, #0000);
+            }
             -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
             mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
         }
@@ -370,7 +377,14 @@
         #header {
             top: 0;
             padding: 60px !important; 
-            background-image: linear-gradient(to bottom, --tg-theme-bg-color, #0000);
+            & ::after{
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-image: linear-gradient(to bottom, --tg-theme-bg-color, #0000);
+            }
             -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
             mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,1), rgba(0,0,0,0));
         }
