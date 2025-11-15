@@ -13,7 +13,14 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        html {
+            position: relative;
+        }
+
         body {
+            position: absolute;
+            top: 0;
+            left: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000000);
@@ -402,8 +409,9 @@
         tg.expand();
         tg.ready();
         tg.requestFullscreen();
-        if (tg.disableVerticalSwipes()) {
-            document.querySelector("#for-tg").style.display = "block";
+        tg.disableVerticalSwipes();
+        if (tg) {
+            document.querySelector("body").style.top = "60px";
         }
 
         // Применяем тему Telegram
