@@ -289,7 +289,9 @@
     </style>
 </head>
 <body>
+    <div style="height: 80px">
 
+    </div>
     <div class="screen" id="listScreen">
         <div class="header">
             <div class="date-label">Акции</div>
@@ -359,6 +361,8 @@
             const tg = window.Telegram.WebApp;
             if (tg) {
                 tg.expand(); // Разворачиваем на весь экран
+                tg.disableVerticalSwipes();
+                tg.requestFullscreen();
                 
                 // Применяем параметры темы, если они доступны
                 if (tg.themeParams) {
